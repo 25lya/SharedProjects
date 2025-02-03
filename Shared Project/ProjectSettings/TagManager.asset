@@ -3,12 +3,16 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Destroyable
+  - Movable
+  - Moveable
+  - ChangeColor
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Viewable
   - Water
   - UI
   - 
