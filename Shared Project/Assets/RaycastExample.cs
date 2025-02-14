@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 public class RaycastExample : MonoBehaviour
 {
@@ -12,6 +13,14 @@ public class RaycastExample : MonoBehaviour
     public Text objectName;
     public LayerMask viewableLayer;
 
+    public Vector3 jump;
+    public float jumpForce = 2.0f;
+    public bool isGrounded;
+
+    public Light flashlight;
+    public float batteryLevel = 100f;
+    public Slider batteryLevelSlide;
+
     private Rigidbody rb;
     private Transform playerBody;
 
@@ -22,18 +31,43 @@ public class RaycastExample : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         Cursor.lockState = CursorLockMode.Locked;
         playerBody = transform;
+
+        StartCoroutine(FlashlightSim());
+
+        jump = new Vector3(0.0f, 2.0f, 0.0f);
+    }
+
+    void OnCollisionStay()
+    {
+        isGrounded = true;
     }
 
     void Update()
     {
+        batteryLevelSlide.value = batteryLevel / 100;
+        flashlight.range = rayDistance;
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            flashlight.enabled = !flashlight.enabled;
+        }
+
         RotatePlayer();
 
         PerformRaycast();
+
+       
     }
 
     void FixedUpdate()
     {
         MovePlayer();
+
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        {
+
+            rb.AddForce(jump * jumpForce, ForceMode.Impulse);
+            isGrounded = false;
+        }
     }
 
     void MovePlayer()
@@ -81,7 +115,7 @@ public class RaycastExample : MonoBehaviour
                     canChangeColor = false;
                 }
             }
-            else if (hit.collider.CompareTag("Moveable"))
+            else if (hit.collider.CompareTag("Moveable") && Input.GetKey(KeyCode.E))
             {
                 MoveObject(hit.collider.gameObject);
             }
@@ -125,5 +159,53 @@ public class RaycastExample : MonoBehaviour
     {
         Destroy(obj);
         collectedObjects++;
+    }
+
+    IEnumerator FlashlightSim()
+    {
+        while(true)
+        {
+            if (flashlight.enabled)
+            {
+                yield return new WaitForSeconds(10f);
+
+                if(flashlight.enabled)
+                {
+                    batteryLevel -= 5;
+                }
+            }
+            else
+            {
+                yield return null;
+            }
+        }
+    }
+
+    IEnumerator FlickerManager()
+    {
+        while (true)
+        {
+            if (flashlight.enabled && batteryLevel < 50)
+            {
+                yield return new WaitForSeconds(Random.Range(2f, 6f)); //flickers between 2 and 5
+                StartCoroutine(FlickerEffect());
+            }
+            else
+            {
+                yield return null;
+            }
+        }    
+    }
+
+    IEnumerator FlickerEffect()
+    {
+        int flickerCount = Random.Range(1, 4);
+        for (int i = 0; i < flickerCount; i++)
+        {
+            flashlight.enabled = false;
+            yield return new WaitForSeconds(Random.Range(0.1f, 0.3f));
+            flashlight.enabled = true;
+            yield return new WaitForSeconds(Random.Range(0.1f, 0.5f));
+        }
     }
 }
