@@ -9,6 +9,7 @@ public class RaycastExample : MonoBehaviour
     public float lookSensitivity = 2f;
     private float verticalRotation = 0f;
     private float horizontalRotation = 0f;
+    public static GameObject[] bridges;
     private int collectedObjects = 0;
     public Text objectName;
     public LayerMask viewableLayer;
@@ -115,7 +116,11 @@ public class RaycastExample : MonoBehaviour
                     canChangeColor = false;
                 }
             }
-            else if (hit.collider.CompareTag("Moveable") && Input.GetKey(KeyCode.E))
+            else if (hit.collider.CompareTag("RedBox") && Input.GetKey(KeyCode.E))
+            {
+                MoveObject(hit.collider.gameObject);
+            }
+            else if (hit.collider.CompareTag("BlueBox") && Input.GetKey(KeyCode.E))
             {
                 MoveObject(hit.collider.gameObject);
             }
@@ -127,6 +132,7 @@ public class RaycastExample : MonoBehaviour
                     DestroyObject(hit.collider.gameObject);
                 }
             }
+           
         }
         else
         {
@@ -159,6 +165,16 @@ public class RaycastExample : MonoBehaviour
     {
         Destroy(obj);
         collectedObjects++;
+    }
+
+    public static void MoveBridge1()
+    {
+        bridges[0].transform.position = new Vector3(-4, 1, 24);
+    }
+
+    public static void MoveBridge2()
+    {
+       // bridges[1].transform.position = new Vector3();
     }
 
     IEnumerator FlashlightSim()

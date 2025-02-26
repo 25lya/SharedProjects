@@ -7,6 +7,15 @@ TagManager:
   - Destroyable
   - Moveable
   - ChangeColor
+  - RedBox
+  - BlueBox
+  - Red1
+  - Red2
+  - Red3
+  - Blue1
+  - Blue2
+  - Bridge1
+  - Bridge2
   layers:
   - Default
   - TransparentFX
